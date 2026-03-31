@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Torres Arquitetura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       RESET & TOKENS
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brown-dark: #583219;
+      --brown-mid:  #ab9474;
+      --cream:      #ecebe7;
+      --white:      #ffffff;
+      --text-dark:  rgba(0,0,0,0.8);
+      --r-card:     30px;
+      --r-pill:     100px;
+      --px:         80px;
+      --gap:        20px;
+    }
+
+    html  { scroll-behavior: smooth; }
+    body  { font-family:'Poppins',sans-serif; background:#fff; color:var(--text-dark); overflow-x:hidden; }
+    img   { display:block; max-width:100%; }
+    a     { text-decoration:none; color:inherit; }
+
+    /* Scroll reveal */
+    .fu { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
+    .fu.in { opacity:1; transform:translateY(0); }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn-solid {
+      display:inline-flex; align-items:center; justify-content:center;
+      background:var(--brown-dark); color:#fff;
+      padding:14px 36px; border-radius:var(--r-pill);
+      font-size:14px; font-weight:500; border:none; cursor:pointer;
+      font-family:'Poppins',sans-serif;
+      transition:background .3s,transform .2s; white-space:nowrap;
+    }
+    .btn-solid:hover { background:#6e3e1e; transform:translateY(-2px); }
+
+    .btn-outline {
+      display:inline-flex; align-items:center; gap:6px; justify-content:center;
+      background:transparent; color:var(--brown-dark);
+      border:1px solid rgba(88,50,25,.5);
+      padding:14px 36px; border-radius:var(--r-pill);
+      font-size:14px; font-weight:500; cursor:pointer;
+      font-family:'Poppins',sans-serif;
+      transition:border-color .3s,transform .2s; white-space:nowrap;
+    }
+    .btn-outline:hover { border-color:var(--brown-dark); transform:translateY(-2px); }
+
+    .btn-ghost {
+      display:inline-flex; align-items:center; gap:6px; justify-content:center;
+      background:rgba(171,148,116,.3); color:#fff;
+      border:1px solid var(--brown-mid); backdrop-filter:blur(2px);
+      padding:14px 36px; border-radius:var(--r-pill);
+      font-size:14px; font-weight:500; cursor:pointer;
+      font-family:'Poppins',sans-serif;
+      transition:background .3s,transform .2s; white-space:nowrap;
+    }
+    .btn-ghost:hover { background:rgba(171,148,116,.5); transform:translateY(-2px); }
+
+    .arrow { display:inline-block; transform:rotate(-45deg); font-size:15px; line-height:1; }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    nav {
+      position:absolute; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px var(--px);
+    }
+    .nav-logo img { height:60px; width:auto; }
+    .nav-logo-txt {
+      height:60px; display:none; align-items:center;
+      font-size:13px; font-weight:600; letter-spacing:1px;
+      color:#fff; text-transform:uppercase; line-height:1.2;
+    }
+    .nav-links {
+      display:flex; align-items:center; list-style:none;
+      background:rgba(212,202,187,.33); border-radius:var(--r-pill); padding:5px 6px;
+    }
+    .nav-links li a {
+      display:block; padding:11px 22px; font-size:13px; font-weight:500;
+      color:#fff; border-radius:var(--r-pill); transition:background .2s; letter-spacing:.5px;
+    }
+    .nav-links li.on a    { background:rgba(171,148,116,.8); }
+    .nav-links li a:hover { background:rgba(171,148,116,.5); }
+    .nav-cta {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(171,148,116,.3); color:#fff;
+      border:1px solid var(--brown-mid); backdrop-filter:blur(2px);
+      padding:12px 28px; border-radius:var(--r-pill);
+      font-size:13px; font-weight:500; cursor:pointer; transition:background .3s;
+    }
+    .nav-cta:hover { background:rgba(171,148,116,.5); }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .hamburger span { display:block; width:24px; height:2px; background:#fff; border-radius:2px; }
+
+    /* Mobile overlay */
+    .mob-menu {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(15,7,3,.97);
+      flex-direction:column; align-items:center; justify-content:center; gap:30px;
+    }
+    .mob-menu.open { display:flex; }
+    .mob-menu a { font-size:28px; font-weight:500; color:#fff; letter-spacing:1px; }
+    .mob-close { position:absolute; top:24px; right:24px; font-size:28px; color:#fff; background:none; border:none; cursor:pointer; }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    .hero {
+      position:relative; height:100vh; min-height:640px;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden; background:var(--cream);
+    }
+    .hero-bg {
+      position:absolute; inset:0;
+      background:url('assets/images/hero-bg.jpg') center/cover no-repeat;
+    }
+    /* fallback Figma se imagem local não existir — via JS abaixo */
+    .hero-bg::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(to bottom,rgba(0,0,0,.35),rgba(0,0,0,.6));
+    }
+    .hero-body {
+      position:relative; z-index:2; text-align:center; color:#fff;
+      max-width:620px; padding:0 20px; margin-top:60px;
+      display:flex; flex-direction:column; align-items:center; gap:24px;
+    }
+    .hero-body h1 { font-size:clamp(36px,4.5vw,57px); font-weight:500; line-height:1.05; }
+    .hero-body p  { font-size:18px; opacity:.92; line-height:1.65; max-width:460px; }
+    .hero-btns    { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; }
+
+    /* ============================================================
+       SOLUTIONS HEADER
+    ============================================================ */
+    .sec-solutions { padding:100px var(--px) 0; }
+    .sol-header {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:40px; flex-wrap:wrap; margin-bottom:44px;
+    }
+    .sol-header h2 { font-size:clamp(32px,3.5vw,49px); font-weight:500; line-height:1.05; max-width:420px; }
+    .sol-right { display:flex; flex-direction:column; gap:22px; max-width:400px; }
+    .sol-right p { font-size:18px; line-height:1.6; }
+    .btn-row { display:flex; gap:16px; flex-wrap:wrap; }
+
+    /* ============================================================
+       PROJECTS GRID — proporções exatas do Figma
+       Canvas 1400px | padding 114px → área útil 1172px
+       Linha 1 (582px): Corporativos 677fr | col-dir 475fr
+         col-dir = Comerciais 281px + Residenciais 281px
+       Linha 2 (281px): Layout 580fr | Retrofit 572fr
+    ============================================================ */
+    .proj-wrap {
+      padding:0 var(--px) 80px;
+      display:flex; flex-direction:column; gap:var(--gap);
+    }
+
+    .proj-row1 {
+      display:grid;
+      grid-template-columns:677fr 475fr;
+      gap:var(--gap);
+      height:582px;
+    }
+    .pc-corp { height:100%; }
+
+    .proj-col-r {
+      display:flex; flex-direction:column; gap:var(--gap); height:100%;
+    }
+    .proj-col-r .proj-card { flex:1; min-height:0; }
+
+    .proj-row2 {
+      display:grid;
+      grid-template-columns:580fr 572fr;
+      gap:var(--gap);
+    }
+    .proj-row2 .proj-card { height:281px; }
+
+    /* Card base */
+    .proj-card {
+      position:relative; border-radius:var(--r-card);
+      overflow:hidden; background:#33231b; cursor:pointer;
+    }
+    .proj-card img {
+      width:100%; height:100%; object-fit:cover; display:block;
+      transition:transform .5s ease;
+    }
+    .proj-card:hover img { transform:scale(1.04); }
+    .pc-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,0) 52%);
+    }
+    .pc-info {
+      position:absolute; bottom:0; left:0; right:0; padding:28px 32px; color:#fff;
+    }
+    .pc-info h3 { font-size:26px; font-weight:500; margin-bottom:10px; line-height:1.2; }
+    .pc-info h3 strong { font-weight:700; }
+    .pc-info p  { font-size:14px; opacity:.9; line-height:1.5; max-width:300px; }
+    .pc-arrow {
+      position:absolute; top:14px; right:14px;
+      width:48px; height:48px; border-radius:50%;
+      background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35);
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:18px; backdrop-filter:blur(4px);
+      transition:background .3s;
+    }
+    .proj-card:hover .pc-arrow { background:rgba(255,255,255,.32); }
+
+    /* ============================================================
+       PORTFOLIO
+    ============================================================ */
+    .sec-portfolio {
+      background:var(--cream); border-radius:25px;
+      margin:0 26px 80px; padding:80px 0 0; overflow:hidden;
+    }
+    .port-header {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:40px; flex-wrap:wrap; margin-bottom:40px; padding:0 70px;
+    }
+    .port-header h2 { font-size:clamp(32px,3.5vw,49px); font-weight:500; line-height:1.05; max-width:330px; }
+    .port-right { display:flex; flex-direction:column; gap:20px; max-width:400px; }
+    .port-right p { font-size:18px; line-height:1.6; }
+
+    .ftabs {
+      display:flex; align-items:center; list-style:none;
+      background:rgba(212,202,187,.33); border-radius:var(--r-pill);
+      padding:5px 6px; width:fit-content; margin:0 70px 40px;
+    }
+    .ftabs li button {
+      display:block; padding:12px 26px;
+      font-size:13px; font-weight:500; color:var(--brown-mid);
+      border-radius:var(--r-pill); border:none; background:transparent;
+      cursor:pointer; transition:background .2s,color .2s;
+      font-family:'Poppins',sans-serif; letter-spacing:.5px;
+    }
+    .ftabs li.on button    { background:var(--brown-mid); color:#fff; }
+    .ftabs li button:hover { background:rgba(171,148,116,.3); }
+
+    /* Galeria 100% largura, sem gap */
+    .port-gallery { display:grid; grid-template-columns:repeat(3,1fr); width:100%; }
+    .gal-card { overflow:hidden; aspect-ratio:4/3; background:#33231b; cursor:pointer; }
+    .gal-card img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+    .gal-card:hover img { transform:scale(1.05); }
+
+    /* Marquee */
+    .marquee-wrap { overflow:hidden; background:var(--cream); padding:10px 0; }
+    .marquee-track {
+      display:flex; gap:60px; white-space:nowrap;
+      animation:marquee 22s linear infinite;
+      font-size:clamp(70px,9vw,130px); font-weight:300;
+      letter-spacing:14px; text-transform:uppercase;
+      color:rgba(0,0,0,.06); user-select:none; padding:20px 0;
+    }
+    @keyframes marquee {
+      from { transform:translateX(0); }
+      to   { transform:translateX(-50%); }
+    }
+
+    /* ============================================================
+       ABOUT
+    ============================================================ */
+    .sec-about {
+      padding:100px var(--px);
+      display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start;
+    }
+    .about-l h2 { font-size:clamp(32px,3.5vw,49px); font-weight:500; line-height:1.05; margin-bottom:26px; }
+    .about-l p  { font-size:18px; line-height:1.7; margin-bottom:36px; }
+    .about-r > p { font-size:22px; line-height:1.7; margin-bottom:34px; }
+    .pillars { display:flex; gap:10px; flex-wrap:wrap; }
+    .pill-tag {
+      display:flex; align-items:center; gap:10px;
+      background:var(--cream); padding:8px 16px;
+      border-radius:40px; font-size:14px; font-weight:500;
+    }
+    .pill-tag img { width:28px; height:28px; }
+
+    /* ============================================================
+       TEAM
+    ============================================================ */
+    .sec-team { position:relative; overflow:hidden; }
+    .team-grid { display:grid; grid-template-columns:1fr 1fr; height:720px; }
+    .team-grid .ph { overflow:hidden; display:flex; align-items:center; }
+    .team-grid .ph img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+    .team-label {
+      position:absolute; bottom:60px; left:50%; transform:translateX(-50%);
+      white-space:nowrap; font-size:clamp(48px,8vw,110px);
+      font-weight:500; letter-spacing:14px; text-transform:uppercase;
+      color:rgba(255,255,255,.13); pointer-events:none; z-index:2;
+    }
+
+    /* ============================================================
+       SCROLL STORY — sticky + vídeo + texto por scroll
+    ============================================================ */
+    #scroll-story { position:relative; height:500vh; }
+    .story-sticky {
+      position:sticky; top:0; height:100vh; overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .story-video {
+      position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;
+    }
+    .story-veil { position:absolute; inset:0; background:rgba(0,0,0,.62); z-index:1; }
+    .story-body {
+      position:relative; z-index:2;
+      max-width:860px; padding:0 60px; text-align:center;
+      display:grid; place-items:center;
+    }
+    .s-line {
+      grid-area:1/1;
+      font-size:clamp(22px,3vw,38px); font-weight:500; line-height:1.45;
+      background:linear-gradient(129deg,#fff 3%,rgba(255,255,255,.12) 80%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      opacity:0; transform:translateY(24px);
+      transition:opacity .55s ease,transform .55s ease;
+      pointer-events:none;
+    }
+    .s-line.on { opacity:1; transform:translateY(0); pointer-events:auto; }
+    .story-bar-wrap {
+      position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+      width:120px; height:2px; background:rgba(255,255,255,.15); border-radius:2px; z-index:3;
+    }
+    .story-bar { height:100%; background:var(--brown-mid); border-radius:2px; width:0%; }
+    .story-hint {
+      position:absolute; bottom:70px; left:50%; transform:translateX(-50%);
+      color:rgba(255,255,255,.4); font-size:11px; letter-spacing:3px;
+      text-transform:uppercase; z-index:3; transition:opacity .4s;
+    }
+    .story-hint.gone { opacity:0; }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer { background:#1a1008; color:#fff; padding:70px var(--px) 40px; }
+    .ft-top {
+      display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px; margin-bottom:60px;
+    }
+    .ft-brand strong { font-size:18px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+    .ft-brand p { font-size:13px; opacity:.5; margin-top:8px; max-width:240px; }
+    .ft-col h4 { font-size:12px; letter-spacing:2px; text-transform:uppercase; opacity:.4; margin-bottom:18px; }
+    .ft-col ul { list-style:none; }
+    .ft-col ul li { margin-bottom:10px; }
+    .ft-col ul li a, .ft-col p { font-size:14px; opacity:.7; }
+    .ft-col p { margin-bottom:8px; line-height:1.6; }
+    .ft-col ul li a:hover { opacity:1; }
+    .ft-bot {
+      border-top:1px solid rgba(255,255,255,.1); padding-top:28px;
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+    }
+    .ft-bot p { font-size:12px; opacity:.4; }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width:1024px) {
+      :root { --px:40px; }
+      .proj-wrap    { padding:0 40px 60px; }
+      .sec-portfolio { margin:0 16px 60px; }
+      .port-header  { padding:0 40px; }
+      .ftabs        { margin:0 40px 40px; }
+      .sec-about    { gap:50px; }
+    }
+    @media (max-width:768px) {
+      :root { --px:24px; }
+      .nav-links,.nav-cta { display:none; }
+      .hamburger { display:flex; }
+      .hero-body h1 { font-size:34px; }
+      .hero-btns    { flex-direction:column; align-items:center; }
+      .sec-solutions { padding-top:60px; }
+      .sol-header   { flex-direction:column; }
+      .proj-wrap    { padding:0 24px 60px; }
+      .proj-row1    { grid-template-columns:1fr; height:auto; }
+      .pc-corp      { height:320px; }
+      .proj-col-r   { flex-direction:row; }
+      .proj-col-r .proj-card { min-height:200px; }
+      .proj-row2    { grid-template-columns:1fr; }
+      .proj-row2 .proj-card { height:240px; }
+      .port-header  { padding:0 24px; }
+      .ftabs        { margin:0 24px 32px; flex-wrap:wrap; }
+      .port-gallery { grid-template-columns:1fr; }
+      .sec-about    { grid-template-columns:1fr; gap:40px; padding-top:60px; }
+      .team-grid    { height:440px; }
+      .team-label   { font-size:36px; letter-spacing:6px; }
+      .story-body   { padding:0 24px; }
+      .s-line       { font-size:20px; }
+      .ft-top       { flex-direction:column; gap:28px; }
+      .ft-bot       { flex-direction:column; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-close" id="mobClose">✕</button>
+  <a href="#projetos">Projetos</a>
+  <a href="#sobre">Quem Somos</a>
+  <a href="#portfolio">Portfólio</a>
+  <a href="#contato">Contrate</a>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <img
+      src="assets/images/logo.png"
+      alt="Studio Torres Arquitetura"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+    />
+    <div class="nav-logo-txt">Studio Torres<br>Arquitetura</div>
+  </div>
+  <ul class="nav-links">
+    <li class="on"><a href="#">INÍCIO</a></li>
+    <li><a href="#projetos">PROJETOS</a></li>
+    <li><a href="#sobre">QUEM SOMOS</a></li>
+    <li><a href="#contato">CONTRATE</a></li>
+  </ul>
+  <a href="#contato" class="nav-cta">Fale Conosco <span class="arrow">→</span></a>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-body">
+    <h1>Arquitetura que transforma espaços em resultados.</h1>
+    <p>10 anos criando projetos comerciais, corporativos e residenciais em todo o Brasil, unindo funcionalidade, estética e performance.</p>
+    <div class="hero-btns">
+      <a href="#projetos" class="btn-solid">Ver Projetos</a>
+      <a href="#contato"  class="btn-ghost">Agendar Reunião <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUÇÕES -->
+<section class="sec-solutions" id="projetos">
+  <div class="sol-header">
+    <h2 class="fu">Soluções completas em arquitetura.</h2>
+    <div class="sol-right fu">
+      <div class="btn-row">
+        <a href="#portfolio" class="btn-solid">Ver Projetos</a>
+        <a href="#contato" class="btn-outline">Agendar Reunião <span class="arrow" style="color:var(--brown-dark)">→</span></a>
+      </div>
+      <p>Projetamos espaços que unem identidade, eficiência e experiência.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS GRID
+     Linha 1 (582px) — 677fr : 475fr
+       Corporativos | Comerciais + Residenciais (empilhados)
+     Linha 2 (281px) — 580fr : 572fr
+       Layout | Retrofit
+-->
+<div class="proj-wrap">
+
+  <div class="proj-row1">
+    <!-- Corporativos — card alto -->
+    <div class="proj-card pc-corp fu">
+      <img
+        src="assets/images/card-corporativos.jpg"
+        alt="Projetos Corporativos"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/02d16c6c-4e99-485b-91e3-9823d7eaecdb'"
+      />
+      <div class="pc-overlay"></div>
+      <div class="pc-info">
+        <h3>Projetos <strong>Corporativos</strong></h3>
+        <p>Projetamos espaços que unem identidade, eficiência e experiência.</p>
+      </div>
+      <div class="pc-arrow">↗</div>
+    </div>
+
+    <!-- Coluna direita: Comerciais + Residenciais -->
+    <div class="proj-col-r">
+      <div class="proj-card fu">
+        <img
+          src="assets/images/card-comerciais.jpg"
+          alt="Projetos Comerciais"
+          onerror="this.src='https://www.figma.com/api/mcp/asset/e1c95ea3-7cfd-41ec-b298-173ac142ee86'"
+        />
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <h3>Projetos <strong>Comerciais</strong></h3>
+          <p>Projetamos espaços que unem identidade, eficiência e experiência.</p>
+        </div>
+        <div class="pc-arrow">↗</div>
+      </div>
+      <div class="proj-card fu">
+        <img
+          src="assets/images/card-residenciais.jpg"
+          alt="Projetos Residenciais"
+          onerror="this.src='https://www.figma.com/api/mcp/asset/f102a645-b433-4d78-96a7-08019232599c'"
+        />
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <h3>Projetos <strong>Residenciais</strong></h3>
+          <p>Projetamos espaços que unem identidade, eficiência e experiência.</p>
+        </div>
+        <div class="pc-arrow">↗</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-row2">
+    <div class="proj-card fu">
+      <img
+        src="assets/images/card-layout.jpg"
+        alt="Projetos e Layout"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/57b1a0e8-a62c-4591-ac97-3978689ca9d3'"
+      />
+      <div class="pc-overlay"></div>
+      <div class="pc-info">
+        <h3>Projetos e <strong>Layout</strong></h3>
+        <p>Projetamos espaços que unem identidade, eficiência e experiência.</p>
+      </div>
+      <div class="pc-arrow">↗</div>
+    </div>
+    <div class="proj-card fu">
+      <img
+        src="assets/images/card-retrofit.jpg"
+        alt="Projetos e Retrofit"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/52b808ce-d4ce-4962-a5ef-d88935b34110'"
+      />
+      <div class="pc-overlay"></div>
+      <div class="pc-info">
+        <h3>Projetos e <strong>Retrofit</strong></h3>
+        <p>Projetamos espaços que unem identidade, eficiência e experiência.</p>
+      </div>
+      <div class="pc-arrow">↗</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PORTFOLIO -->
+<section class="sec-portfolio" id="portfolio">
+  <div class="port-header">
+    <div class="fu">
+      <h2>Projetos que falam por si.</h2>
+      <br/>
+      <a href="#contato" class="btn-outline">Agendar Reunião <span class="arrow" style="color:var(--brown-dark)">→</span></a>
+    </div>
+    <div class="port-right fu">
+      <p>Cada projeto é desenvolvido de forma única, respeitando as necessidades do cliente, a funcionalidade do espaço e a identidade do negócio.</p>
+    </div>
+  </div>
+
+  <ul class="ftabs">
+    <li class="on"><button>Todos</button></li>
+    <li><button>CORPORATIVOS</button></li>
+    <li><button>INDUSTRIAIS</button></li>
+    <li><button>RESIDENCIAIS</button></li>
+  </ul>
+
+  <div class="port-gallery">
+    <div class="gal-card fu">
+      <img
+        src="assets/images/card-corporativos.jpg"
+        alt="Portfólio 1"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/57b8f014-aade-40b9-83b2-369c68419e3c'"
+      />
+    </div>
+    <div class="gal-card fu">
+      <img
+        src="assets/images/card-comerciais.jpg"
+        alt="Portfólio 2"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/02d16c6c-4e99-485b-91e3-9823d7eaecdb'"
+      />
+    </div>
+    <div class="gal-card fu">
+      <img
+        src="assets/images/card-layout.jpg"
+        alt="Portfólio 3"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/57b1a0e8-a62c-4591-ac97-3978689ca9d3'"
+      />
+    </div>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track" aria-hidden="true">
+      <span>Há mais de 10 anos criando ambientes que unem design, técnica e resultado.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span>Há mais de 10 anos criando ambientes que unem design, técnica e resultado.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec-about" id="sobre">
+  <div class="about-l fu">
+    <h2>Estudio Torres Arquitetura.</h2>
+    <p>O Studio Torres Arquitetura atua há mais de 10 anos desenvolvendo projetos arquitetônicos para clientes em todo o Brasil.</p>
+    <div class="btn-row">
+      <a href="#portfolio" class="btn-solid">Ver Projetos</a>
+      <a href="#contato" class="btn-outline">Agendar Reunião <span class="arrow" style="color:var(--brown-dark)">→</span></a>
+    </div>
+  </div>
+  <div class="about-r fu">
+    <p>Com experiência em projetos comerciais, corporativos e residenciais, nosso trabalho é guiado por três pilares:</p>
+    <div class="pillars">
+      <div class="pill-tag">
+        <img src="https://www.figma.com/api/mcp/asset/292c2b9c-32ab-4c34-87ca-2e5d40573bc5" alt="" />
+        Funcionalidade
+      </div>
+      <div class="pill-tag">
+        <img src="https://www.figma.com/api/mcp/asset/dc1514fc-9285-4c61-a62a-5160e1e4872f" alt="" />
+        Estética
+      </div>
+      <div class="pill-tag">
+        <img src="https://www.figma.com/api/mcp/asset/f50ab8b3-c11a-4e14-8c7a-b6fad1d6a873" alt="" />
+        Eficiência
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="sec-team">
+  <div class="team-grid">
+    <div class="ph">
+      <img
+        src="assets/images/eduardo.jpg"
+        alt="Eduardo Torres"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/fb5ef674-cbf0-44ca-9b32-6ba7d7b9e622'"
+      />
+    </div>
+    <div class="ph">
+      <img
+        src="assets/images/gislene.jpg"
+        alt="Gislene Torres"
+        onerror="this.src='https://www.figma.com/api/mcp/asset/1f9ca87d-e61a-4740-ad06-35222fe196b3'"
+      />
+    </div>
+  </div>
+  <div class="team-label">Eduardo &amp; Gislene</div>
+</section>
+
+<!-- SCROLL STORY — sticky scroll + vídeo de fundo -->
+<div id="scroll-story">
+  <div class="story-sticky">
+    <video class="story-video" autoplay muted loop playsinline>
+      <source src="assets/video/video-bg.mp4" type="video/mp4" />
+    </video>
+    <div class="story-veil"></div>
+    <div class="story-body">
+      <span class="s-line" data-i="0">Movidos pela paixão pela arquitetura moderna e pela busca constante por excelência,</span>
+      <span class="s-line" data-i="1">acreditamos que um projeto precisa ir além da aparência.</span>
+      <span class="s-line" data-i="2">Ele deve resolver necessidades, otimizar espaços e proporcionar experiências que agreguem valor.</span>
+      <span class="s-line" data-i="3">Trabalhamos com projetos personalizados, desenvolvidos com rigor técnico, atenção aos detalhes e total comprometimento com o resultado final.</span>
+      <span class="s-line" data-i="4">Ao longo de mais de 10 anos, construímos uma trajetória marcada por projetos que unem funcionalidade, estética e eficiência,</span>
+      <span class="s-line" data-i="5">sempre respeitando as particularidades de cada cliente.</span>
+      <span class="s-line" data-i="6">Prazer, Eduardo Torres e Gislene Torres — Studio Torres Arquitetura.</span>
+    </div>
+    <div class="story-bar-wrap"><div class="story-bar" id="sBar"></div></div>
+    <div class="story-hint" id="sHint">role para continuar ↓</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contato">
+  <div class="ft-top">
+    <div class="ft-brand">
+      <strong>Studio Torres</strong>
+      <p>Arquitetura que transforma espaços em resultados reais.</p>
+    </div>
+    <div class="ft-col">
+      <h4>Menu</h4>
+      <ul>
+        <li><a href="#">Início</a></li>
+        <li><a href="#projetos">Projetos</a></li>
+        <li><a href="#sobre">Quem Somos</a></li>
+        <li><a href="#portfolio">Portfólio</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Serviços</h4>
+      <ul>
+        <li><a href="#">Projetos Corporativos</a></li>
+        <li><a href="#">Projetos Comerciais</a></li>
+        <li><a href="#">Projetos Residenciais</a></li>
+        <li><a href="#">Layout e Retrofit</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Contato</h4>
+      <p>📧 contato@studiotorres.com.br</p>
+      <p>📱 (XX) XXXXX-XXXX</p>
+      <p>📍 Brasil</p>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <p>© 2026 Studio Torres Arquitetura. Todos os direitos reservados.</p>
+    <p>Desenvolvido com ♥</p>
+  </div>
+</footer>
+
+<script>
+  /* ============================================================
+     Hero BG — tenta local, cai no Figma se não existir
+  ============================================================ */
+  (function() {
+    var bg = document.getElementById('heroBg');
+    var local = "url('assets/images/hero-bg.jpg')";
+    var figma = "url('https://www.figma.com/api/mcp/asset/1eceede8-bf6a-48d9-9094-fa43c3e9dba3')";
+    var img = new Image();
+    img.onload = function() { bg.style.backgroundImage = local; };
+    img.onerror = function() { bg.style.backgroundImage = figma; };
+    img.src = 'assets/images/hero-bg.jpg';
+  })();
+
+  /* ============================================================
+     Mobile menu
+  ============================================================ */
+  document.getElementById('hamburger').addEventListener('click', function() {
+    document.getElementById('mobMenu').classList.add('open');
+  });
+  document.getElementById('mobClose').addEventListener('click', function() {
+    document.getElementById('mobMenu').classList.remove('open');
+  });
+  document.querySelectorAll('.mob-menu a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      document.getElementById('mobMenu').classList.remove('open');
+    });
+  });
+
+  /* ============================================================
+     Scroll reveal
+  ============================================================ */
+  var revObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.10 });
+  document.querySelectorAll('.fu').forEach(function(el) { revObs.observe(el); });
+
+  /* ============================================================
+     Filter tabs
+  ============================================================ */
+  document.querySelectorAll('.ftabs li button').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ftabs li').forEach(function(li) { li.classList.remove('on'); });
+      btn.parentElement.classList.add('on');
+    });
+  });
+
+  /* ============================================================
+     Active nav on scroll
+  ============================================================ */
+  var navSecs = document.querySelectorAll('section[id], footer[id]');
+  var navAs   = document.querySelectorAll('.nav-links li a');
+  window.addEventListener('scroll', function() {
+    var cur = '';
+    navSecs.forEach(function(s) { if (pageYOffset >= s.offsetTop - 120) cur = s.id; });
+    navAs.forEach(function(a) {
+      a.parentElement.classList.remove('on');
+      if (a.getAttribute('href') === '#' + cur) a.parentElement.classList.add('on');
+    });
+  }, { passive: true });
+
+  /* ============================================================
+     SCROLL STORY
+     #scroll-story  height = 500vh
+     .story-sticky  sticky 100vh → percurso rolável = 400vh
+     Divide em N slots (1 por frase). Só 1 com .on de cada vez.
+  ============================================================ */
+  (function() {
+    var story = document.getElementById('scroll-story');
+    var bar   = document.getElementById('sBar');
+    var hint  = document.getElementById('sHint');
+    var lines = Array.from(document.querySelectorAll('.s-line'));
+    var N     = lines.length;
+
+    function tick() {
+      var scrollable = story.offsetHeight - window.innerHeight;
+      var scrolled   = Math.max(0, Math.min(window.scrollY - story.offsetTop, scrollable));
+      var p          = scrolled / scrollable;
+
+      bar.style.width = (p * 100).toFixed(1) + '%';
+      hint.classList.toggle('gone', p > 0.04);
+
+      var slot = Math.min(Math.floor(p * N), N - 1);
+      lines.forEach(function(el, i) { el.classList.toggle('on', i === slot); });
+    }
+
+    window.addEventListener('scroll', tick, { passive: true });
+    tick();
+  })();
+</script>
+</body>
+</html>
